@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>one.mwc.macos-audio-confgrr.login</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/opt/homebrew/bin/macos-audio-confgrr</string>
+    <string>--device</string><string>JDS Labs Element IV</string>
+    <string>--max</string>
+    <string>--tries</string><string>120</string>
+    <string>--wait</string><string>2</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><dict><key>SuccessfulExit</key><false/></dict>
+  <key>StandardOutPath</key><string>~/Library/Logs/macos-audio-confgrr.login.log</string>
+  <key>StandardErrorPath</key><string>~/Library/Logs/macos-audio-confgrr.login.log</string>
+</dict></plist>

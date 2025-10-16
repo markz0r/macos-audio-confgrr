@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+  <key>Label</key><string>one.mwc.macos-audio-confgrr.config</string>
+  <key>ProgramArguments</key><array>
+    <string>/opt/homebrew/bin/macos-audio-confgrr</string>
+    <string>--config</string>
+    <string>~/Library/Application Support/macos-audio-confgrr/config/macos-audio-confgrr-settings.json</string>
+  </array>
+  <key>RunAtLoad</key><true/>
+  <key>StartInterval</key><integer>3600</integer>
+  <key>StandardOutPath</key><string>~/Library/Logs/macos-audio-confgrr.config.log</string>
+  <key>StandardErrorPath</key><string>~/Library/Logs/macos-audio-confgrr.config.log</string>
+</dict></plist>

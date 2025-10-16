@@ -1,0 +1,94 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to create (e.g. v0.2.0)"
+        required: true
+
+jobs:
+  create-release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    outputs:
+      formula_url: ${{ steps.source_sha.outputs.url }}
+      formula_sha256: ${{ steps.source_sha.outputs.sha256 }}
+    env:
+      TAG: ${{ github.event.inputs.tag }}
+    steps:
+      - name: Validate inputs
+        run: |
+          if [[ -z "${TAG}" ]]; then
+            echo "Tag input is required."
+            exit 1
+          fi
+          if [[ "${TAG}" != v* ]]; then
+            echo "Tag should start with 'v', e.g. v0.2.0"
+            exit 1
+          fi
+          if [[ "${GITHUB_REF}" != "refs/heads/main" ]]; then
+            echo "This workflow can only run on main (current ref: ${GITHUB_REF})."
+            exit 1
+          fi
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Confirm unique tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists."
+            exit 1
+          fi
+
+      - name: Show toolchain
+        run: |
+          xcodebuild -version
+          swift --version
+
+      - name: Build optimized binary
+        run: make build
+
+      - name: Package artifacts
+        run: |
+          mkdir -p dist
+          cp ./.build/macos-audio-confgrr "dist/macos-audio-confgrr-${TAG}"
+          tar -C dist -czf "dist/macos-audio-confgrr-${TAG}-macos.tar.gz" "macos-audio-confgrr-${TAG}"
+
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${TAG}" \
+            "dist/macos-audio-confgrr-${TAG}-macos.tar.gz" \
+            "dist/macos-audio-confgrr-${TAG}" \
+            --title "${TAG}" \
+            --generate-notes
+
+      - name: Compute source tarball sha256
+        id: source_sha
+        run: |
+          curl -sSL "https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.tar.gz" -o source.tar.gz
+          SHA256=$(shasum -a 256 source.tar.gz | awk '{print $1}')
+          echo "sha256=${SHA256}" >> "$GITHUB_OUTPUT"
+          echo "url=https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.tar.gz" >> "$GITHUB_OUTPUT"
+
+      - name: Summarize Homebrew formula updates
+        run: |
+          {
+            echo "## Homebrew formula snippet"
+            echo '```rb'
+            echo "  url \"${{ steps.source_sha.outputs.url }}\""
+            echo "  sha256 \"${{ steps.source_sha.outputs.sha256 }}\""
+            echo '```'
+            echo ""
+            echo "Binary assets published:"
+            echo "- macos-audio-confgrr-${TAG}-macos.tar.gz"
+            echo "- macos-audio-confgrr-${TAG}"
+          } >> "$GITHUB_STEP_SUMMARY"
