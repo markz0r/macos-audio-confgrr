@@ -1,0 +1,8 @@
+{
+  "check_frequency_seconds": 3600,
+  "fallback_to_current": true,
+  "devices": [
+    { "name": "JDS Labs Element IV", "rate": "max" },
+    { "name": "Dell U3225QE", "rate": 48000 }
+  ]
+}
