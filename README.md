@@ -12,6 +12,16 @@ CLI helper for macOS that keeps a preferred audio output device selected and set
 - Xcode Command Line Tools or a full Xcode install for Swift compilation.
 
 ## Installation
+
+### Homebrew
+
+```bash
+brew tap markz0r/homebrew-tools
+brew install markz0r/homebrew-tools/macos-audio-confgrr
+```
+
+### Build
+
 ```bash
 git clone https://github.com/markz0r/macos-audio-confgrr.git
 cd macos-audio-confgrr
